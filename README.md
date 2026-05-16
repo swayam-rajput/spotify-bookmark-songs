@@ -1,4 +1,4 @@
-# Song Bookmark — Spicetify Extension
+# Skippy - Spicetify Extension
 
 > Bookmark your favorite moment in any song. Spotify will automatically skip to it every time the track plays.
 
