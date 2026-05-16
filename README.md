@@ -1,15 +1,15 @@
-# 🔖 Song Bookmark — Spicetify Extension
+# Song Bookmark — Spicetify Extension
 
 > Bookmark your favorite moment in any song. Spotify will automatically skip to it every time the track plays.
 
 ## Features
 
-- 📌 **Drag-to-bookmark** — drag the pin icon onto the progress bar to set a timestamp
-- ⚡ **Auto-seek** — on song start, automatically jumps to your saved spot
-- 🟢 **Visual marker** — a glowing dot on the progress bar shows where your bookmark is
-- 🗑 **Hover to remove** — hover over the marker dot to get a remove option
-- 💾 **Persistent storage** — bookmarks are saved in `localStorage` per Spotify track URI
-- 🎵 **Per-song, per-user** — each song gets its own independent bookmark
+- **Drag-to-bookmark** — drag the pin icon onto the progress bar to set a timestamp
+- **Auto-seek** — on song start, automatically jumps to your saved spot
+- **Visual marker** — a glowing dot on the progress bar shows where your bookmark is
+- **Hover to remove** — hover over the marker dot to get a remove option
+- **Persistent storage** — bookmarks are saved in `localStorage` per Spotify track URI
+- **Per-song, per-user** — each song gets its own independent bookmark
 
 ## How to Use
 
