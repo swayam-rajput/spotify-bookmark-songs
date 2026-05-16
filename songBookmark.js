@@ -1,10 +1,10 @@
 // ============================================================
-// Song Bookmark — Spicetify Extension v2
+// Skippy — Spicetify Extension v2
 // ============================================================
 
-(function SongBookmark() {
+(function Skippy() {
     if (!Spicetify?.Player?.addEventListener || !Spicetify?.Platform) {
-        setTimeout(SongBookmark, 300);
+        setTimeout(Skippy, 300);
         return;
     }
 
@@ -13,7 +13,7 @@
     // Each entry: { ms: number, name: string, artist: string }
     // Keyed by Spotify track URI.
     // ─────────────────────────────────────────
-    const STORAGE_KEY = "SongBookmark:bookmarks";
+    const STORAGE_KEY = "Skippy:bookmarks";
 
     const Storage = {
         getAll() {
@@ -630,5 +630,5 @@
         }
     });
 
-    console.log("[SongBookmark] v2 loaded");
+    console.log("[Skippy] v2 loaded");
 })();
