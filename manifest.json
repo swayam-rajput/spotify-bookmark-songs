@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Song Bookmark",
+    "description": "Bookmark your favorite moment in any song. Drag the pin icon to the progress bar to save a timestamp — Spotify will auto-skip to it every time the track plays.",
+    "preview": "screenshot.png",
+    "main": "songBookmark.js",
+    "readme": "README.md",
+    "authors": [
+      { "name": "yourGitHubUsername", "url": "https://github.com/yourGitHubUsername" }
+    ],
+    "tags": ["bookmark", "seek", "timestamp", "utility", "player"]
+  }
+]
