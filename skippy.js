@@ -362,7 +362,7 @@
         },
 
         scheduleHide() {
-            this.tooltipHideTimer = setTimeout(() => this.hideTooltip(), 220);
+            this.tooltipHideTimer = setTimeout(() => this.hideTooltip(), 1000);
         },
 
         hideTooltip() {
@@ -522,12 +522,12 @@
                     justify-content: center;
                     width: 28px;
                     height: 28px;
-                    background: rgba(255,255,255,0.05);
-                    border: 1px solid rgba(255,255,255,0.1);
+                    background: transparent;
+                    border: 1px solid rgba(71, 69, 69, 0.02);
                     border-radius: 5px;
-                    cursor: grab;
+                    cursor: default;
                     color: var(--spice-subtext, #888);
-                    transition: color 0.12s, background 0.12s, border-color 0.12s;
+                    transition: color 0.12s;
                     padding: 0;
                 }
                 .sb-list-btn { cursor: pointer; }
@@ -549,8 +549,8 @@
                     position: absolute;
                     top: 50%;
                     transform: translateY(-50%);
-                    width: 18px;
-                    height: 18px;
+                    width: 22px;
+                    height: 22px;
                     background: var(--spice-main, #121212);
                     border: 1px solid rgba(30,215,96,0.6);
                     border-radius: 3px;
@@ -572,9 +572,9 @@
                     position: fixed;
                     background: var(--spice-main, #121212);
                     border: 1px solid rgba(255,255,255,0.1);
-                    border-radius: 6px;
+                    border-radius: 1px;
                     padding: 8px 12px;
-                    font-size: 12px;
+                    font-size: 14px;
                     color: var(--spice-text, #fff);
                     z-index: 99999;
                     opacity: 0;
@@ -585,11 +585,11 @@
                 }
                 .sb-tooltip.show { opacity: 1; visibility: visible; pointer-events: all; }
                 .sb-tt-label { font-weight: 500; margin-bottom: 2px; }
-                .sb-tt-time { color: var(--spice-subtext, #888); font-size: 11px; margin-bottom: 8px; }
+                .sb-tt-time { color: var(--spice-subtext, #888); font-size: 12px; margin-bottom: 8px; }
                 .sb-tt-buttons { display: flex; gap: 6px; }
                 .sb-btn {
-                    flex: 1; padding: 4px 8px; border-radius: 4px; border: none;
-                    cursor: pointer; font-size: 11px; font-weight: 600; transition: opacity 0.1s;
+                    flex: 1; padding: 4px 8px; border-radius: 0px; border: none;
+                    cursor: pointer; font-size: 13px; font-weight: 400; transition: opacity 0.1s;
                 }
                 .sb-btn:hover { opacity: 0.78; }
                 .sb-btn-confirm { background: var(--spice-button-active, #1ed760); color: #000; }

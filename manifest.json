@@ -5,6 +5,7 @@
     "preview": "screenshot.png",
     "main": "skippy.js",
     "readme": "README.md",
+    "branch": "main",
     "authors": [
       { "name": "swayam-rajput", "url": "https://github.com/swayam-rajput" }
     ],
