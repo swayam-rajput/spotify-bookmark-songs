@@ -376,11 +376,6 @@
             const all = Storage.getAll();
             const entries = Object.entries(all);
 
-            if (entries.length === 0) {
-                Spicetify.showNotification("No bookmarks saved yet");
-                return;
-            }
-
             // Sort by artist + track name
             entries.sort(([, a], [, b]) => {
                 const aName = typeof a === "object" ? `${a.artist} ${a.name}` : a.toString();
@@ -388,29 +383,36 @@
                 return aName.localeCompare(bName);
             });
 
-            const rows = entries.map(([uri, raw]) => {
-                const entry = typeof raw === "number"
-                    ? { ms: raw, name: uri.split(":")[2] ?? uri, artist: "" }
-                    : raw;
-                const isCurrent = uri === getCurrentUri();
-                return `
-                    <div class="sb-list-row${isCurrent ? " sb-list-row--current" : ""}" data-uri="${uri}" data-ms="${entry.ms}">
-                        <div class="sb-list-info">
-                            <span class="sb-list-name">${entry.name}</span>
-                            ${entry.artist ? `<span class="sb-list-artist">${entry.artist}</span>` : ""}
+            const rows = entries.length === 0
+                ? `<div class="sb-empty-state">No bookmarks saved yet.</div>`
+                : entries.map(([uri, raw]) => {
+                    const entry = typeof raw === "number"
+                        ? { ms: raw, name: uri.split(":")[2] ?? uri, artist: "" }
+                        : raw;
+                    const isCurrent = uri === getCurrentUri();
+                    return `
+                        <div class="sb-list-row${isCurrent ? " sb-list-row--current" : ""}" data-uri="${uri}" data-ms="${entry.ms}">
+                            <div class="sb-list-info">
+                                <span class="sb-list-name">${entry.name}</span>
+                                ${entry.artist ? `<span class="sb-list-artist">${entry.artist}</span>` : ""}
+                            </div>
+                            <span class="sb-list-time">${msToTime(entry.ms)}</span>
+                            <button class="sb-list-del" data-uri="${uri}" title="Remove bookmark">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
                         </div>
-                        <span class="sb-list-time">${msToTime(entry.ms)}</span>
-                        <button class="sb-list-del" data-uri="${uri}" title="Remove bookmark">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                    </div>
-                `;
-            }).join("");
+                    `;
+                }).join("");
 
             const container = document.createElement("div");
             container.innerHTML = `
                 <style>
-                    .sb-list { font-size: 13px; color: var(--spice-text); max-height: 360px; overflow-y: auto; }
+                    .sb-modal-content { display: flex; flex-direction: column; gap: 16px; min-width: 320px; }
+                    .sb-list { font-size: 13px; color: var(--spice-text); max-height: 280px; overflow-y: auto; }
+                    .sb-empty-state {
+                        padding: 24px 0; text-align: center;
+                        color: var(--spice-subtext, #888); font-style: italic;
+                    }
                     .sb-list-row {
                         display: flex; align-items: center; gap: 10px;
                         padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -429,8 +431,52 @@
                     }
                     .sb-list-row:hover .sb-list-del { opacity: 1; }
                     .sb-list-del:hover { color: #e05c5c; }
+                    
+                    /* ── Backup Toolbar ── */
+                    .sb-backup-toolbar {
+                        display: flex; gap: 10px;
+                        border-top: 1px solid rgba(255,255,255,0.1);
+                        padding-top: 12px;
+                        justify-content: flex-end;
+                    }
+                    .sb-toolbar-btn {
+                        display: inline-flex; align-items: center; gap: 6px;
+                        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+                        border-radius: 16px; padding: 6px 14px;
+                        font-size: 12px; font-weight: 500; color: var(--spice-text, #fff);
+                        cursor: pointer; transition: all 0.2s ease;
+                    }
+                    .sb-toolbar-btn:hover {
+                        background: rgba(255,255,255,0.12);
+                        border-color: rgba(255,255,255,0.25);
+                        transform: translateY(-1px);
+                    }
+                    .sb-toolbar-btn:active {
+                        transform: translateY(0);
+                    }
+                    .sb-toolbar-btn-primary {
+                        background: var(--spice-button-active, #1ed760);
+                        color: #000; border: none;
+                    }
+                    .sb-toolbar-btn-primary:hover {
+                        background: #1fdf64;
+                        color: #000;
+                        opacity: 0.9;
+                    }
                 </style>
-                <div class="sb-list">${rows}</div>
+                <div class="sb-modal-content">
+                    <div class="sb-list">${rows}</div>
+                    <div class="sb-backup-toolbar">
+                        <button id="sb-btn-export" class="sb-toolbar-btn" title="Export bookmarks to a JSON file">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export Backup
+                        </button>
+                        <button id="sb-btn-import" class="sb-toolbar-btn sb-toolbar-btn-primary" title="Import bookmarks from a JSON file">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Import Backup
+                        </button>
+                    </div>
+                </div>
             `;
 
             // Click row → play track from bookmark
@@ -457,12 +503,79 @@
                     Storage.remove(uri);
                     btn.closest(".sb-list-row").remove();
                     this.update();
-                    // Close if empty
+                    // If no rows left, show empty state instead of closing
                     if (container.querySelectorAll(".sb-list-row").length === 0) {
-                        Spicetify.PopupModal.hide();
-                        Spicetify.showNotification("All bookmarks removed");
+                        const listContainer = container.querySelector(".sb-list");
+                        listContainer.innerHTML = `<div class="sb-empty-state">No bookmarks saved yet.</div>`;
                     }
                 });
+            });
+
+            // Export Backup button handler
+            container.querySelector("#sb-btn-export").addEventListener("click", () => {
+                const data = Storage.getAll();
+                if (Object.keys(data).length === 0) {
+                    Spicetify.showNotification("No bookmarks to export!");
+                    return;
+                }
+                try {
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "skippy_bookmarks.json";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    Spicetify.showNotification("Bookmarks exported successfully!");
+                } catch (err) {
+                    Spicetify.showNotification("Failed to export: " + err.message);
+                }
+            });
+
+            // Import Backup button handler
+            container.querySelector("#sb-btn-import").addEventListener("click", () => {
+                const input = document.createElement("input");
+                input.type = "file";
+                input.accept = ".json";
+                input.style.display = "none";
+                input.addEventListener("change", (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            if (typeof imported !== "object" || imported === null) {
+                                throw new Error("Format must be a JSON object");
+                            }
+                            const current = Storage.getAll();
+                            let count = 0;
+                            for (const [uri, entry] of Object.entries(imported)) {
+                                if (typeof uri === "string" && (typeof entry === "number" || (typeof entry === "object" && typeof entry.ms === "number"))) {
+                                    current[uri] = entry;
+                                    count++;
+                                }
+                            }
+                            if (count === 0) {
+                                throw new Error("No valid bookmarks found in file");
+                            }
+                            Storage.saveAll(current);
+                            Spicetify.showNotification(`Successfully imported ${count} bookmarks!`);
+                            Spicetify.PopupModal.hide();
+                            this.update();
+                            // Re-open list to show the imported items immediately!
+                            setTimeout(() => this.showBookmarksList(), 100);
+                        } catch (err) {
+                            Spicetify.showNotification("Import failed: " + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                });
+                document.body.appendChild(input);
+                input.click();
+                input.remove();
             });
 
             Spicetify.PopupModal.display({
